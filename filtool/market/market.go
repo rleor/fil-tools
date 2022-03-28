@@ -48,6 +48,7 @@ func FixPublishDeals(ctx context.Context, dealsPerBatch int, batches int) {
 	successDeals := map[cid.Cid]storagemarket.MinerDeal{}
 	for _, deal := range deals {
 		if deal.State == storagemarket.StorageDealPublish {
+			// TODO: check start epoch. if passed, find a way to drop the deal.
 			log.Println("retry-publish deal: proposal cid=", deal.ProposalCid, ",create=", deal.CreationTime.Time())
 			err := marketnode.MarketRetryPublishDeal(ctx, deal.ProposalCid)
 			if err != nil {
