@@ -1,0 +1,10 @@
+{
+	"fullnode": {
+		"token": "t1",
+		"node": "n1"
+	},
+	"storageminer": {
+		"token": "t2",
+		"node": "n2"
+	}
+}
