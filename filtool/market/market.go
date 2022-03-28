@@ -83,6 +83,10 @@ func FixPublishDeals(ctx context.Context, dealsPerBatch int, batches int) {
 		if _, ok := successDeals[ud.ProposalCid]; ok {
 			if ud.State == storagemarket.StorageDealPublishing {
 				log.Println(ud.ProposalCid, "StorageDealPublishing")
+			} else if ud.State == storagemarket.StorageDealStaged {
+				log.Println(ud.ProposalCid, "StorageDealStaged")
+			} else if ud.State == storagemarket.StorageDealPublish {
+				log.Println(ud.ProposalCid, "StorageDealPublish")
 			} else {
 				log.Println(ud.ProposalCid, ud.State)
 			}
