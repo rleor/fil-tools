@@ -3,18 +3,21 @@ package main
 import (
 	"context"
 	"filtool/market"
+	"filtool/seal"
 	"filtool/snap"
+	"fmt"
+	"github.com/filecoin-project/go-address"
 	"log"
 	"os"
 	"strconv"
 )
 
 func main() {
+	var err error
 	if len(os.Args) > 1 {
 		if os.Args[1] == "fix_market_publish" {
 			dealsPerBatch := 40
 			if len(os.Args) > 2 {
-				var err error
 				dealsPerBatch, err = strconv.Atoi(os.Args[2])
 				if err != nil {
 					log.Println(os.Args[2], "is an invalid int - dealsPerBatch, will use default value 40.")
@@ -22,7 +25,6 @@ func main() {
 			}
 			batches := 100
 			if len(os.Args) > 3 {
-				var err error
 				batches, err = strconv.Atoi(os.Args[3])
 				if err != nil {
 					log.Println(os.Args[3], "is an invalid int - batches, will use default value 100.")
@@ -33,7 +35,6 @@ func main() {
 		} else if os.Args[1] == "mark_cc_available" {
 			limit := 10
 			if len(os.Args) > 2 {
-				var err error
 				limit, err = strconv.Atoi(os.Args[2])
 				if err != nil {
 					log.Println(os.Args[2], "is an invalid int - limit, will use default value 10.")
@@ -41,11 +42,44 @@ func main() {
 			}
 			snap.MarkSnaps(context.Background(), limit)
 			return
+		} else if os.Args[1] == "prenprove" {
+			if len(os.Args) < 4 {
+				printHelp()
+				return
+			}
+
+			var startSN int
+			var endSN int
+			var minerAddress address.Address
+			minerAddress, err := address.NewFromString(os.Args[2])
+			if err != nil {
+				printHelp()
+				return
+			}
+
+			startSN, err = strconv.Atoi(os.Args[3])
+			if err != nil {
+				printHelp()
+				return
+			}
+
+			endSN, err = strconv.Atoi(os.Args[4])
+			if err != nil {
+				printHelp()
+				return
+			}
+			seal.FindPreButNotProveSectors(context.Background(), minerAddress, startSN, endSN)
+			return
 		}
 	}
 	printHelp()
 }
 
 func printHelp() {
-	// TODO:
+	fmt.Println("./filtool fix_market_publish <deals_per_batch> <batches>")
+	fmt.Println()
+	fmt.Println("./filtool mark_cc_available <limit>")
+	fmt.Println()
+	fmt.Println("./filtool prenprove <minerId> <start_sector_number> <end_sector_number>")
+	fmt.Println()
 }
