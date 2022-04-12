@@ -10,12 +10,46 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	var err error
 	if len(os.Args) > 1 {
-		if os.Args[1] == "fix_market_publish" {
+		if os.Args[1] == "recovery" {
+			if len(os.Args) < 5 {
+				printHelp()
+				return
+			} else {
+				minerId, err := address.NewFromString(os.Args[2])
+				if err != nil {
+					printHelp()
+					return
+				}
+				dl, err := strconv.Atoi(os.Args[3])
+				if err != nil {
+					printHelp()
+					return
+				}
+				parIdxs := os.Args[4]
+				if err != nil {
+					printHelp()
+					return
+				}
+				var parInts []uint64
+				for _, s := range strings.Split(parIdxs, ",") {
+					parIdx, err := strconv.Atoi(s)
+					if err != nil {
+						printHelp()
+						return
+					}
+
+					parInts = append(parInts, uint64(parIdx))
+				}
+				seal.Recovery(context.Background(), minerId, uint64(dl), parInts)
+				return
+			}
+		} else if os.Args[1] == "fix_market_publish" {
 			dealsPerBatch := 40
 			if len(os.Args) > 2 {
 				dealsPerBatch, err = strconv.Atoi(os.Args[2])
@@ -81,5 +115,7 @@ func printHelp() {
 	fmt.Println("./filtool mark_cc_available <limit>")
 	fmt.Println()
 	fmt.Println("./filtool prenprove <minerId> <start_sector_number> <end_sector_number>")
+	fmt.Println()
+	fmt.Println("./filtool recovery <minerId> <dl> <partitions, separated by ,>")
 	fmt.Println()
 }
