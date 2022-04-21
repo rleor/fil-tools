@@ -2,6 +2,7 @@ package snap
 
 import (
 	"context"
+	"filtool/util"
 	"fmt"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/api"
@@ -10,7 +11,6 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 	"log"
 	"net/http"
-	"filtool/util"
 )
 
 var fullnode v1api.FullNode
@@ -18,7 +18,7 @@ var storageminernode v0api.StorageMiner
 
 func MarkSnaps(ctx context.Context, limit int) {
 	// read config
-	config, err := util.ParseConfig("")
+	config, err := util.GetConfig()
 	if err != nil {
 		log.Fatalln("read config failed: ", err)
 		return

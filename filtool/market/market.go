@@ -17,7 +17,7 @@ var marketnode v0api.StorageMiner
 func FixPublishDeals(ctx context.Context, dealsPerBatch int, batches int) {
 	// ---- init ----
 	// read config
-	config, err := util.ParseConfig("")
+	config, err := util.GetConfig()
 	if err != nil {
 		log.Fatalln("read config failed: ", err)
 		return

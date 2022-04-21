@@ -12,16 +12,15 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
-	"golang.org/x/xerrors"
 	"log"
 	"net/http"
 )
 
 var fullnode2 v1api.FullNode
 
-func Recovery(ctx context.Context, minerId address.Address, dl uint64, parIdxs []uint64) {
+func Recovery(ctx context.Context, minerId address.Address, dl uint64, parIdxs []uint64, controlAddress address.Address) {
 	// read config
-	config, err := util.ParseConfig("")
+	config, err := util.GetConfig()
 	if err != nil {
 		log.Fatalln("read config failed: ", err)
 		return
@@ -70,6 +69,7 @@ func Recovery(ctx context.Context, minerId address.Address, dl uint64, parIdxs [
 		Method: miner.Methods.DeclareFaultsRecovered,
 		Params: enc,
 		Value:  types.NewInt(0),
+		From:   controlAddress,
 	}
 	max, _ := big.FromString("1500000000000000000")
 	spec := &api.MessageSendSpec{MaxFee: abi.TokenAmount(max)}
@@ -100,13 +100,6 @@ func Recovery(ctx context.Context, minerId address.Address, dl uint64, parIdxs [
 }
 
 func prepareMessage(ctx context.Context, minerId address.Address, msg *types.Message, spec *api.MessageSendSpec) error {
-	mi, err := fullnode2.StateMinerInfo(ctx, minerId, types.EmptyTSK)
-	if err != nil {
-		return xerrors.Errorf("error getting miner info: %w", err)
-	}
-	// set the worker as a fallback
-	msg.From = mi.Worker
-
 	// (optimal) initial estimation with some overestimation that guarantees
 	// block inclusion within the next 20 tipsets.
 	gm, err := fullnode2.GasEstimateMessageGas(ctx, msg, spec, types.EmptyTSK)

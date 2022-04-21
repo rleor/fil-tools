@@ -19,12 +19,13 @@ type ApiInfo struct {
 	Node  string `json:"node"`
 }
 
-func ParseConfig(cfg_path string) (*Config, error) {
-	if cfg_path == "" {
-		cfg_path = "config.json"
+func GetConfig() (*Config, error) {
+	cfgPath := os.Getenv("CONFIG_PATH")
+	if cfgPath == "" {
+		cfgPath = "config.json"
 	}
 
-	f, err := os.Open(cfg_path)
+	f, err := os.Open(cfgPath)
 	if err != nil {
 		return nil, err
 	}

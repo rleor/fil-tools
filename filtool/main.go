@@ -17,7 +17,7 @@ func main() {
 	var err error
 	if len(os.Args) > 1 {
 		if os.Args[1] == "recovery" {
-			if len(os.Args) < 5 {
+			if len(os.Args) < 6 {
 				printHelp()
 				return
 			} else {
@@ -46,7 +46,15 @@ func main() {
 
 					parInts = append(parInts, uint64(parIdx))
 				}
-				seal.Recovery(context.Background(), minerId, uint64(dl), parInts)
+
+				controlAddr := os.Args[5]
+				controlAddress, err := address.NewFromString(controlAddr)
+				if err != nil {
+					log.Fatalln("control address is invalid.")
+					printHelp()
+					return
+				}
+				seal.Recovery(context.Background(), minerId, uint64(dl), parInts, controlAddress)
 				return
 			}
 		} else if os.Args[1] == "fix_market_publish" {
@@ -116,6 +124,6 @@ func printHelp() {
 	fmt.Println()
 	fmt.Println("./filtool prenprove <minerId> <start_sector_number> <end_sector_number>")
 	fmt.Println()
-	fmt.Println("./filtool recovery <minerId> <dl> <partitions, separated by ,>")
+	fmt.Println("./filtool recovery <minerId> <dl> <partitions, separated by ,> <control address>")
 	fmt.Println()
 }

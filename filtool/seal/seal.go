@@ -16,7 +16,7 @@ var fullnode v1api.FullNode
 
 func FindPreButNotProveSectors(ctx context.Context, minerId address.Address, startSectorNumber int, endSectorNumber int) {
 	// read config
-	config, err := util.ParseConfig("")
+	config, err := util.GetConfig()
 	if err != nil {
 		log.Fatalln("read config failed: ", err)
 		return
