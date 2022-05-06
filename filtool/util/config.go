@@ -9,9 +9,15 @@ import (
 )
 
 type Config struct {
-	Fullnode     ApiInfo `json:"fullnode"`
-	StorageMiner ApiInfo `json:"storageminer"`
-	MarketMiner  ApiInfo `json:"marketminer"`
+	Fullnode     ApiInfo   `json:"fullnode"`
+	StorageMiner ApiInfo   `json:"storageminer"`
+	MarketMiner  ApiInfo   `json:"marketminer"`
+	Redis        RedisInfo `json:"redis"`
+}
+
+type RedisInfo struct {
+	Conn     string `json:"conn"`
+	Password string `json:"password"`
 }
 
 type ApiInfo struct {

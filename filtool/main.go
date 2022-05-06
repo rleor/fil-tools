@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"filtool/env"
 	"filtool/market"
 	"filtool/seal"
 	"filtool/snap"
@@ -112,9 +113,46 @@ func main() {
 			}
 			seal.FindPreButNotProveSectors(context.Background(), minerAddress, startSN, endSN)
 			return
+		} else if os.Args[1] == "redis_clean" {
+			if len(os.Args) < 5 {
+				printHelp()
+				return
+			}
+
+			minerId, err := strconv.Atoi(os.Args[2])
+			if err != nil {
+				printHelp()
+				return
+			}
+			min, err := strconv.Atoi(os.Args[3])
+			if err != nil {
+				printHelp()
+				return
+			}
+			max, err := strconv.Atoi(os.Args[4])
+			if err != nil {
+				printHelp()
+				return
+			}
+			env.RedisClean(context.Background(), minerId, min, max)
+		} else if os.Args[1] == "redis_sectorinfo" {
+			if len(os.Args) < 3 {
+				printHelp()
+				return
+			}
+			minerId, err := strconv.Atoi(os.Args[2])
+			if err != nil {
+				printHelp()
+				return
+			}
+			sn, err := strconv.Atoi(os.Args[3])
+			if err != nil {
+				printHelp()
+				return
+			}
+			env.RedisGetSectorInfo(context.Background(), minerId, sn)
 		}
 	}
-	printHelp()
 }
 
 func printHelp() {
@@ -125,5 +163,9 @@ func printHelp() {
 	fmt.Println("./filtool prenprove <minerId> <start_sector_number> <end_sector_number>")
 	fmt.Println()
 	fmt.Println("./filtool recovery <minerId> <dl> <partitions, separated by ,> <control address>")
+	fmt.Println()
+	fmt.Println("./filtool redis_clean <minerId> <min sector number><max sector number>")
+	fmt.Println()
+	fmt.Println("./filtool redis_sectorinfo <minerId> <sector number>")
 	fmt.Println()
 }
