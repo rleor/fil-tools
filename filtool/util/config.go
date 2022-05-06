@@ -18,6 +18,8 @@ type Config struct {
 type RedisInfo struct {
 	Conn     string `json:"conn"`
 	Password string `json:"password"`
+	Batch    int    `json:"batch"`
+	Interval int    `json:"interval"`
 }
 
 type ApiInfo struct {

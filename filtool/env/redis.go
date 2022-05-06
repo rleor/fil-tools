@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"log"
 	"strings"
+	"time"
 )
 
 func RedisGetSectorInfo(ctx context.Context, minerId int, sn int) {
@@ -67,6 +68,14 @@ func RedisClean(ctx context.Context, minerId int, min int, max int) {
 		Password: config.Redis.Password,
 		PoolSize: 1,
 	})
+	batch := config.Redis.Batch
+	interval := config.Redis.Interval
+	if batch == 0 {
+		batch = 50
+	}
+	if interval == 0 {
+		interval = 1
+	}
 
 	var errSn []int
 	var errSnMsg []string
@@ -119,6 +128,9 @@ func RedisClean(ctx context.Context, minerId int, min int, max int) {
 				log.Println("clear ", len(entries), " logs")
 				clrCount++
 				logCount += len(entries)
+				if clrCount%batch == 0 {
+					time.Sleep(time.Duration(interval) * time.Second)
+				}
 			} else {
 				log.Println("skip: ", sectorInfo.State)
 				skipCount++
