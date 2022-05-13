@@ -8,6 +8,7 @@ require (
 	github.com/filecoin-project/go-jsonrpc v0.1.5
 	github.com/filecoin-project/go-state-types v0.1.3
 	github.com/filecoin-project/lotus v1.14.4
+	github.com/filecoin-project/specs-actors/v7 v7.0.0-rc1
 	github.com/filecoin-project/specs-storage v0.2.0
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/ipfs/go-cid v0.1.0

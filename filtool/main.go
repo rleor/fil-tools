@@ -8,6 +8,7 @@ import (
 	"filtool/snap"
 	"fmt"
 	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-state-types/abi"
 	"log"
 	"os"
 	"strconv"
@@ -17,7 +18,29 @@ import (
 func main() {
 	var err error
 	if len(os.Args) > 1 {
-		if os.Args[1] == "recovery" {
+		if os.Args[1] == "expiration" {
+			if len(os.Args) < 5 {
+				printHelp()
+				return
+			}
+			startEpoch, err := strconv.Atoi(os.Args[2])
+			if err != nil {
+				printHelp()
+				return
+			}
+			endEpoch, err := strconv.Atoi(os.Args[3])
+			if err != nil {
+				printHelp()
+				return
+			}
+			batchEpoch, err := strconv.Atoi(os.Args[4])
+			if err != nil {
+				printHelp()
+				return
+			}
+			seal.GetExpirationPower(context.Background(), abi.ChainEpoch(startEpoch), abi.ChainEpoch(endEpoch), batchEpoch)
+			return
+		} else if os.Args[1] == "recovery" {
 			if len(os.Args) < 6 {
 				printHelp()
 				return
@@ -167,5 +190,7 @@ func printHelp() {
 	fmt.Println("./filtool redis_clean <minerId> <min sector number><max sector number>")
 	fmt.Println()
 	fmt.Println("./filtool redis_sectorinfo <minerId> <sector number>")
+	fmt.Println()
+	fmt.Println("./filtool expiration <start epoch> <end epoch> <epoch batch count>")
 	fmt.Println()
 }
