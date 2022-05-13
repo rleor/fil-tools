@@ -109,9 +109,6 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 		if expireSectors > 0 {
 			log.Println(minerId, ": expire sectors: ", expireSectors, " expire power: ", expirePower)
 		}
-		if processed > 10000 {
-			break
-		}
 	}
 	log.Println("Summary ", "[", start, ",", end, "]")
 	totalPower := abi.NewStoragePower(0)
