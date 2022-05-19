@@ -37,7 +37,13 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 	defer closer()
 	fullnode3 = fn
 
-	allMiners, err := fullnode3.StateListMiners(ctx, types.EmptyTSK)
+	startTs, err := fullnode3.ChainGetTipSetByHeight(ctx, start, types.EmptyTSK)
+	if err != nil {
+		log.Fatalln("ChainHead failed: ", err)
+		return
+	}
+
+	allMiners, err := fullnode3.StateListMiners(ctx, startTs.Key())
 	if err != nil {
 		log.Fatalln("StateListMiners failed", err)
 		return
@@ -70,7 +76,7 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 		//}
 		//log.Println("processing ", minerId, " ", minerInfo.SectorSize)
 
-		socis, err := fullnode3.StateMinerActiveSectors(ctx, minerId, types.EmptyTSK)
+		socis, err := fullnode3.StateMinerActiveSectors(ctx, minerId, startTs.Key())
 		if err != nil {
 			log.Println("error: StateMinerActiveSectors failed", err)
 			skipMinerIds = append(skipMinerIds, minerId)
