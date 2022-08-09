@@ -18,7 +18,7 @@ import (
 
 var fullnode3 v1api.FullNode
 
-func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.ChainEpoch, batch int) {
+func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.ChainEpoch, batch int, minerId *address.Address) {
 	// read config
 	config, err := util.GetConfig()
 	if err != nil {
@@ -43,12 +43,18 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 		return
 	}
 
-	allMiners, err := fullnode3.StateListMiners(ctx, startTs.Key())
-	if err != nil {
-		log.Fatalln("StateListMiners failed", err)
-		return
+	var minersToCheck []address.Address
+	if minerId == nil {
+		minersToCheck, err := fullnode3.StateListMiners(ctx, startTs.Key())
+		if err != nil {
+			log.Fatalln("StateListMiners failed", err)
+			return
+		}
+		log.Println(len(minersToCheck), " miners to check.")
+	} else {
+		minersToCheck = append(minersToCheck, *minerId)
+		log.Printf("%v to check", minerId)
 	}
-	log.Println(len(allMiners), " miners to check.")
 
 	var skipMinerIds []address.Address
 	var processed int
@@ -65,7 +71,7 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 	}
 
 	tsStart := build.Clock.Now()
-	for _, minerId := range allMiners {
+	for _, minerId := range minersToCheck {
 		processed++
 		// get sector size from sector to save one rpc call.
 		//minerInfo, err := fullnode3.StateMinerInfo(ctx, minerId, types.EmptyTSK)

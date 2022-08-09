@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"filtool/car"
 	"filtool/env"
 	"filtool/market"
 	"filtool/seal"
@@ -38,7 +39,16 @@ func main() {
 				printHelp()
 				return
 			}
-			seal.GetExpirationPower(context.Background(), abi.ChainEpoch(startEpoch), abi.ChainEpoch(endEpoch), batchEpoch)
+			var minerId *address.Address
+			if len(os.Args) >= 6 {
+				mi, err := address.NewFromString(os.Args[5])
+				if err != nil {
+					printHelp()
+					return
+				}
+				minerId = &mi
+			}
+			seal.GetExpirationPower(context.Background(), abi.ChainEpoch(startEpoch), abi.ChainEpoch(endEpoch), batchEpoch, minerId)
 			return
 		} else if os.Args[1] == "recovery" {
 			if len(os.Args) < 6 {
@@ -174,7 +184,23 @@ func main() {
 				return
 			}
 			env.RedisGetSectorInfo(context.Background(), minerId, sn)
+		} else if os.Args[1] == "read_car" {
+			file, err := os.Open(os.Args[2])
+			if err != nil {
+				fmt.Println(err)
+				printHelp()
+				return
+			}
+			v, err := car.ReadVersion(file)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			fmt.Println("version ", v)
 		}
+	} else {
+		printHelp()
 	}
 }
 
@@ -191,6 +217,6 @@ func printHelp() {
 	fmt.Println()
 	fmt.Println("./filtool redis_sectorinfo <minerId> <sector number>")
 	fmt.Println()
-	fmt.Println("./filtool expiration <start epoch> <end epoch> <epoch batch count>")
+	fmt.Println("./filtool expiration <start epoch> <end epoch> <epoch batch count> <minerId optional>")
 	fmt.Println()
 }
