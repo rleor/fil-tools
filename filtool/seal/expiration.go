@@ -108,6 +108,7 @@ func GetExpirationPower(ctx context.Context, start abi.ChainEpoch, end abi.Chain
 			for k, _ := range batchResult {
 				if soci.Expiration >= k && soci.Expiration < minEpoch(k+abi.ChainEpoch(batch), end+1) {
 					power := QAPowerForSector(ss, soci)
+					log.Printf("Expiration: %v, DealWeight: %v, VerifiedDealWeight: %v, power: %v", soci.Expiration, soci.DealWeight, soci.VerifiedDealWeight, power)
 					batchResult[k] = big.Add(batchResult[k], power)
 					expireSectors++
 					expirePower = big.Add(expirePower, power)
